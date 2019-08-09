@@ -40,7 +40,8 @@
             <button id="Th_Xoa_Dau" class="btn btn-primary">Xóa học viên Đầu</button>
             <button id="Th_Xoa_Cuoi" class="btn btn-primary">Xóa học viên Cuối</button>
             <hr />
-            Nhập giá trị tìm : <input type="text" id="Th_gtTim" size="40" onkeyup="" placeholder="Nhập giá trị tìm... Enter" />
+            Nhập giá trị tìm : <input type="text" id="Th_gtTim" size="40" onkeyup="KeyCode(event)"
+                placeholder="Nhập giá trị tìm... Enter" />
             <button id="Th_Tim" class="btn btn-info">Tìm (find)</button>
             <button id="Th_Loc" class="btn btn-info">Lọc (filter)</button>
             <button id="Th_BoLoc" class="btn btn-info">Bỏ Lọc</button>
@@ -60,19 +61,129 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    <script src="../Xu_ly/Xu_ly_3L.js"></script>        
+    <script src="../Xu_ly/Xu_ly_3L.js"></script>
     <script>
-        var Cua_hang=Doc_Cua_hang();
+
+        var Cua_hang = Doc_Cua_hang();
         Xuat_Thong_tin_Cua_hang(Cua_hang, Th_Cua_hang)
         // Khai báo danh sách học viên
+        /*
         var Danh_sach = ["Hùng", "Hương", "Kiệt", "Huy", "Tuấn"]
-        Xuat_Danh_sach_Hoc_vien(Danh_sach,Th_Danh_sach_Hoc_sinh)
-        
+        Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+        */
+        var chuoi_hoc_vien = Doc_Danh_sach_hoc_vien();
+        console.log(chuoi_hoc_vien);
+        var Danh_sach=chuoi_hoc_vien.split(",");
+        Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+        // Xử lý Thêm
+        Th_Them.onclick = () => {
+            let Hop_le = Th_Ten.value != "";
+            if (Hop_le) {
+                // Thêm vào biến danh sách
+                Danh_sach.push(Th_Ten.value)
+                console.log(Danh_sach);
+                Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+            } else {
+                Th_Thong_bao.innerHTML = `Nhập họ tên`;
+                Th_Ten.focus();
+            }
+        }
+        // Xóa Đầu
+        Th_Xoa_Dau.onclick = () => {
+            var Hop_le = Danh_sach.length > 0
+            if (Hop_le) {
+                Danh_sach.shift()
+                Th_Thong_bao.innerHTML = `Xóa học viên đầu tiên trong danh sách thành công ${Danh_sach.join()}`
+                // Xuất Danh sách
+                Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+            } else {
+                Th_Thong_bao.innerHTML = `Danh sách học viên hết rồi !!!!!`
+            }
+        }
+        // Xóa Cuối
+        Th_Xoa_Cuoi.onclick = () => {
+            var Hop_le = Danh_sach.length > 0
+            if (Hop_le) {
+                Danh_sach.pop()
+                Th_Thong_bao.innerHTML = `Xóa học viên Cuối cùng trong danh sách thành công ${Danh_sach.join()}`
+                // Xuất Danh sách
+                Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+            } else {
+                Th_Thong_bao.innerHTML = `Danh sách học viên hết rồi !!!!!`
+            }
+        }
+        // Tìm
+        Th_Tim.onclick = () => {
+            var gtTim = Th_gtTim.value.trim()
+            var Hop_le = gtTim != ""
+            if (Hop_le) {
+
+                var KqTim = Danh_sach.find(x => x.toLowerCase() == gtTim.toLowerCase())
+
+                if (KqTim != undefined) {
+                    var vi_tri = Danh_sach.findIndex(x => x.toLowerCase() == gtTim.toLowerCase());
+                    Th_Thong_bao.innerHTML = `Tìm thấy học viên <strong>${gtTim}</strong> tại vị trí ${vi_tri + 1} trong Danh sách: ${Danh_sach.join()}`
+                } else {
+                    Th_Thong_bao.innerHTML = `Không tìm thấy học viên <strong>${gtTim}</strong> trong Danh sách: ${Danh_sach.join()}`
+                }
+            } else {
+                Th_Thong_bao.innerHTML = `Nhập giá trị tìm`
+                Th_gtTim.focus()
+            }
+        }
+        // Lọc
+        Th_Loc.onclick = () => {
+            var gtTim = Th_gtTim.value.trim()
+            var Hop_le = gtTim != ""
+            if (Hop_le) {
+                var KqLoc = Danh_sach.filter(x => x.toLowerCase().includes(gtTim.toLowerCase()))
+                if (KqLoc.length > 0) {
+                    Th_Thong_bao.innerHTML = `Danh sách học viên: ${KqLoc.join()} thỏa điều kiện <strong>${gtTim}</strong>`
+                    Xuat_Danh_sach_Hoc_vien(KqLoc, Th_Danh_sach_Hoc_sinh)
+                } else {
+                    Th_Thong_bao.innerHTML = `Không tìm thấy <strong>${gtTim}</strong> trong Danh sách: ${Danh_sach.join()}`
+                }
+            } else {
+                Th_Thong_bao.innerHTML = `Nhập giá trị tìm`
+                Th_gtTim.focus()
+            }
+        }
+        // Bỏ lọc
+        Th_BoLoc.onclick = () => {
+            Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+            Th_Thong_bao.innerHTML = `KHUNG THÔNG BÁO`
+        }
+        // Xóa theo giá trị
+        Th_Xoa.onclick = () => {
+            var gtXoa = Th_gtXoa.value.trim()
+            var Hop_le = gtXoa != ""
+            if (Hop_le) {
+                var chi_so = Danh_sach.findIndex(x => x.toLowerCase() == gtXoa.toLowerCase());
+                if (chi_so >= 0) {
+                    Danh_sach.splice(chi_so, 1)
+                    Xuat_Danh_sach_Hoc_vien(Danh_sach, Th_Danh_sach_Hoc_sinh)
+                }
+            } else {
+                Th_Thong_bao.innerHTML = `Nhập giá trị Xóa`
+                Th_gtXoa.focus()
+            }
+        }
+
+        function KeyCode(event) {
+            if (event.keyCode == 13) {
+                var gtTim = event.target.value
+                console.log(gtTim)
+
+                var Danh_sach_Tim = Danh_sach.filter(x => x.toLowerCase().includes(gtTim.toLowerCase()))
+                Xuat_Danh_sach_Hoc_vien(Danh_sach_Tim, Th_Danh_sach_Hoc_sinh)
+                Th_Thong_bao.innerHTML = `Danh sách học viên: ${Danh_sach_Tim.join()} thỏa điều kiện <strong>${gtTim}</strong>`
+
+            }
+        }
 
 
 
-
-    </script>        
+    </script>
 </body>
 
 </html>
